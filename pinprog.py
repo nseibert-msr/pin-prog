@@ -60,6 +60,8 @@ def pin_list_duple(total_pins,job_number,pin_length):
     list_1 = []
     list_2 = []
     list_3 = []
+    list_1a = []
+    list_2a = []
     #generates list 1
     print("Creating List 1")
     for x in range(0, nu_pins):
@@ -74,7 +76,10 @@ def pin_list_duple(total_pins,job_number,pin_length):
         
     #remove duplicates from lists
     list_1a = np.unique(list_1)
-    list_2a = np.unique(list_2)
+    list_2a = np.setdiff1d(np.unique(list_2), list_1a)
+
+    #list_1a = list(set(list_1))
+    #list_2a = list(set(list_2)-set(list_1a))
 
     print("Combining Lists...")
 
@@ -84,8 +89,8 @@ def pin_list_duple(total_pins,job_number,pin_length):
             list_3 = np.append(list_3,x+y)
 
     #saves all three lists as csv files and appends the job number to the file name.
-    np.savetxt(job_number + "_list_1.csv", list_1, fmt='%6s', delimiter=",")
-    np.savetxt(job_number + "_list_2.csv", list_2, fmt='%6s', delimiter=",")
+    np.savetxt(job_number + "_list_1.csv", list_1a, fmt='%6s', delimiter=",")
+    np.savetxt(job_number + "_list_2.csv", list_2a, fmt='%6s', delimiter=",")
     np.savetxt(job_number + "_pin_list.csv", list_3, fmt='%6s', delimiter=",")
 
     print("Done!")
