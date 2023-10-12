@@ -7,9 +7,15 @@ import string
 print("Import Math")
 import math
 import time
+import tkinter as tk
+from tkinter import filedialog
 
+root = tk.Tk()
+root.withdraw()
 
+file_path = filedialog.askdirectory()
 
+print(file_path)
 
 #create string to pull characters from and removes I, 0, O as those characters are often confused. 
 #This version only uses uppercase and digits 1-9
@@ -26,18 +32,20 @@ letters = letters.replace("O","")
 print("Starting program...")
 #Collect starting variables: Pin List type,Length of Pin, total number of pins, and the job number.
 def menu():
-    pin_type = int(input("What type of pin list do you want to generate? Enter '1' for Single List and '2' for Duple List.  -  "))
+    pin_type = int(input("What type of pin list do you want to generate? Enter '1' for Single List and '2' for Duple List and 99 to quit:  "))
 
     if pin_type==1:
         pin_length = int(input("How long should each pin be?   "))
     elif pin_type==2:
         pin_length = int(input("How long should each pin segment be?   "))
+    elif pin_type==99:
+        quit()
     else:
         print("Not a valid pin list.")
         menu()
 
-    total_pins = int(input("How many pins do you need?"))
-    job_number = input("Enter the five digit job number")
+    total_pins = int(input("How many pins do you need?  "))
+    job_number = input("Enter the five digit job number:  ")
 
     if pin_type==1:
         pin_list_single(total_pins,job_number,pin_length)
@@ -56,6 +64,7 @@ def pin_list_single(total_pins,job_number,pin_length):
         list_1 = np.append(list_1, set)
     np.savetxt(job_number + "_pin_list.csv", list_1, fmt='%6s', delimiter=",")
     print("Done!")
+    quit()
 
 #function for creating two list of pins that when all combinations of the two lists are combined, generates a list of length of list1 * length of list2
 def pin_list_duple(total_pins,job_number,pin_length):
@@ -100,11 +109,15 @@ def pin_list_duple(total_pins,job_number,pin_length):
         for y in list_2a:
             list_3.append((random.uniform(0,1),x+y,x,y))
 
+    out_name_1 = file_path + "/" + job_number + "_pin_list.csv"
+    out_name_2 = file_path + "/" + job_number + "_ff_upload.csv"
+    
     #saves csv files and appends the job number to the file name.
-    np.savetxt(job_number + "_pin_list.csv", list_3, fmt='%6s', delimiter=",") #File will all combinations of pins to be sent to external vendor
-    np.savetxt(job_number +"_ff_upload.csv", combined_data, fmt='%6s', delimiter=",") #File with only each individal pin in two columns for upload to formidable forms
+    np.savetxt(out_name_1, list_3, fmt='%6s', delimiter=",") #File will all combinations of pins to be sent to external vendor
+    np.savetxt(out_name_2, combined_data, fmt='%6s', delimiter=",") #File with only each individal pin in two columns for upload to formidable forms
     
 
     print("Done!")
+    quit()
 
 menu()
