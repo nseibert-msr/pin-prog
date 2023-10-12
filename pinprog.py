@@ -5,7 +5,11 @@ import random
 print("Import String")
 import string
 print("Import Math")
-import math 
+import math
+import time
+
+
+
 
 #create string to pull characters from and removes I, 0, O as those characters are often confused. 
 #This version only uses uppercase and digits 1-9
@@ -62,6 +66,7 @@ def pin_list_duple(total_pins,job_number,pin_length):
     list_3 = []
     list_1a = []
     list_2a = []
+
     #generates list 1
     print("Creating List 1")
     for x in range(0, nu_pins):
@@ -77,21 +82,27 @@ def pin_list_duple(total_pins,job_number,pin_length):
     #remove duplicates from lists
     list_1a = np.unique(list_1)
     list_2a = np.setdiff1d(np.unique(list_2), list_1a)
+    
+    combined_data = []
+    combined_data.append(("MSR_ID", "PIN_1", "PIN_2"))
+    for i in range(len(list_1a)):
+        combined_data.append((i+1,list_1a[i], list_2a[i]))
+        
 
-    #list_1a = list(set(list_1))
-    #list_2a = list(set(list_2)-set(list_1a))
 
     print("Combining Lists...")
 
     #iterates over the two lists to create all combinations and append them to the final list
     for x in list_1a:
         for y in list_2a:
-            list_3 = np.append(list_3,x+y)
+            list_3.append((random.uniform(0,1),x+y,x,y))
 
     #saves all three lists as csv files and appends the job number to the file name.
-    np.savetxt(job_number + "_list_1.csv", list_1a, fmt='%6s', delimiter=",")
-    np.savetxt(job_number + "_list_2.csv", list_2a, fmt='%6s', delimiter=",")
+    #np.savetxt(job_number + "_list_1.csv", list_1a, fmt='%6s', delimiter=",")
+    #np.savetxt(job_number + "_list_2.csv", list_2a, fmt='%6s', delimiter=",")
     np.savetxt(job_number + "_pin_list.csv", list_3, fmt='%6s', delimiter=",")
+    np.savetxt(job_number +"_ff_upload.csv", combined_data, fmt='%6s', delimiter=",") 
+    
 
     print("Done!")
 
