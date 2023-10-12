@@ -26,7 +26,7 @@ letters = letters.replace("O","")
 print("Starting program...")
 #Collect starting variables: Pin List type,Length of Pin, total number of pins, and the job number.
 def menu():
-    pin_type = int(input("What type of pin list do you want to generate? 1-Single List 2-Duple List.  -  "))
+    pin_type = int(input("What type of pin list do you want to generate? Enter '1' for Single List and '2' for Duple List.  -  "))
 
     if pin_type==1:
         pin_length = int(input("How long should each pin be?   "))
@@ -37,7 +37,7 @@ def menu():
         menu()
 
     total_pins = int(input("How many pins do you need?"))
-    job_number = input("What is the job number?")
+    job_number = input("Enter the five digit job number")
 
     if pin_type==1:
         pin_list_single(total_pins,job_number,pin_length)
@@ -46,6 +46,7 @@ def menu():
     else:
         menu()
 
+#funtion for creating one list of pins
 def pin_list_single(total_pins,job_number,pin_length):
     print("Creating List 1")
     #initialize arrays to hold lists
@@ -56,6 +57,7 @@ def pin_list_single(total_pins,job_number,pin_length):
     np.savetxt(job_number + "_pin_list.csv", list_1, fmt='%6s', delimiter=",")
     print("Done!")
 
+#function for creating two list of pins that when all combinations of the two lists are combined, generates a list of length of list1 * length of list2
 def pin_list_duple(total_pins,job_number,pin_length):
     #Takes the square root of the total number of pins and rounds up to the nearest integer. Add two to each list as a buffer for duplicates.
     nu_pins = math.ceil(math.sqrt(total_pins))+2
@@ -66,6 +68,7 @@ def pin_list_duple(total_pins,job_number,pin_length):
     list_3 = []
     list_1a = []
     list_2a = []
+    combined_data = []
 
     #generates list 1
     print("Creating List 1")
@@ -83,7 +86,7 @@ def pin_list_duple(total_pins,job_number,pin_length):
     list_1a = np.unique(list_1)
     list_2a = np.setdiff1d(np.unique(list_2), list_1a)
     
-    combined_data = []
+
     combined_data.append(("MSR_ID", "PIN_1", "PIN_2"))
     for i in range(len(list_1a)):
         combined_data.append((i+1,list_1a[i], list_2a[i]))
@@ -97,11 +100,9 @@ def pin_list_duple(total_pins,job_number,pin_length):
         for y in list_2a:
             list_3.append((random.uniform(0,1),x+y,x,y))
 
-    #saves all three lists as csv files and appends the job number to the file name.
-    #np.savetxt(job_number + "_list_1.csv", list_1a, fmt='%6s', delimiter=",")
-    #np.savetxt(job_number + "_list_2.csv", list_2a, fmt='%6s', delimiter=",")
-    np.savetxt(job_number + "_pin_list.csv", list_3, fmt='%6s', delimiter=",")
-    np.savetxt(job_number +"_ff_upload.csv", combined_data, fmt='%6s', delimiter=",") 
+    #saves csv files and appends the job number to the file name.
+    np.savetxt(job_number + "_pin_list.csv", list_3, fmt='%6s', delimiter=",") #File will all combinations of pins to be sent to external vendor
+    np.savetxt(job_number +"_ff_upload.csv", combined_data, fmt='%6s', delimiter=",") #File with only each individal pin in two columns for upload to formidable forms
     
 
     print("Done!")
