@@ -1,10 +1,6 @@
-print("Import numpy")
 import numpy as np
-print("Import random")
 import random
-print("Import String")
 import string
-print("Import Math")
 import math
 import time
 import tkinter as tk
@@ -56,11 +52,21 @@ def menu():
 
     total_pins = int(input("How many pins do you need?  \n"))
     job_number = input("Enter the five digit job number:  \n")
+    
+    site_id = int(input("Is this for a mailing or focus on boston distribution? \n'1' - MAIL \n'2' - Focus on Boston \n "))
+
+    if site_id==1:
+        site = "MAIL"
+    elif site_id==2:
+        site = "FOB"
+    else:
+        print("Not a valid selection")
+        menu()
 
     if pin_type==1:
         pins_single(total_pins,job_number,pin_length)
     elif pin_type==2:
-        pins_duple(total_pins,job_number,pin_length)
+        pins_duple(total_pins,job_number,pin_length,site)
     else:
         menu()
 
@@ -78,7 +84,7 @@ def pins_single(total_pins,job_number,pin_length):
     quit()
 
 #function for creating two list of pins that when all combinations of the two lists are combined, generates a list of length of list1 * length of list2
-def pins_duple(total_pins,job_number,pin_length):
+def pins_duple(total_pins,job_number,pin_length, site):
     #Takes the square root of the total number of pins and rounds up to the nearest integer. Add five to each list as a buffer for duplicates.
     nu_pins = math.ceil(math.sqrt(total_pins))+10
     
@@ -122,25 +128,31 @@ def pins_duple(total_pins,job_number,pin_length):
         None
 
     #creates the data table for the formidable forms upload
-    combined_data.append(("MSR_ID", "PIN_1", "PIN_2"))
+    combined_data.append(("MSR_ID","PIN_1","PIN_2"))
     for i in range(len(pins_1)):
-        combined_data.append((i+1,pins_1[i], pins_2[i]))
+        combined_data.append((i+1,pins_1[i],pins_2[i]))
 
     print("Combining Lists...")
 
     #iterates over the two lists to create all combinations and append them to the final list
+    url = "https://marketstreetresearch.com/survey-" + job_number + "/?SITE=" + site
     for x in pins_1:
         for y in pins_2:
             pins_3.append((random.uniform(0,1),x+y,x,y))
 
     pins_3.sort(key=lambda x: x[0], reverse=False)
+    counter=1
+    numbered_pins = [('MSR_ID','PIN','PIN-1','PIN-2','URL')]
+    for item in pins_3:
+        numbered_pins.append((counter,item[1],item[2],item[3],url + "&PIN1=" + item[2] + "&PIN2=" + item[3]))
+        counter += 1
 
     #creates the export name including the file path from the folder prompt
     out_name_1 = file_path + "/" + job_number + "_pins.csv"
     out_name_2 = file_path + "/" + job_number + "_ff_upload.csv"
     
     #exports the final tables as csv files to the folder previously chosen
-    np.savetxt(out_name_1, pins_3, fmt='%6s', delimiter=",") #File will all combinations of pins to be sent to external vendor
+    np.savetxt(out_name_1, numbered_pins, fmt='%6s', delimiter=",") #File will all combinations of pins to be sent to external vendor
     np.savetxt(out_name_2, combined_data, fmt='%6s', delimiter=",") #File with only each individal pin in two columns for upload to formidable forms
     
     print("Done!")
