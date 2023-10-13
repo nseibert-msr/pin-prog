@@ -40,22 +40,22 @@ del letters_list[letters_list.index("O")]
 #
 
 print("Starting program...")
-#Collect starting variables: Pin List type,Length of Pin, total number of pins, and the job number.
+#Collect starting variables: Pin List type, Length of Pin segments, total number of pins, and the job number.
 def menu():
-    pin_type = int(input("What type of pin list do you want to generate? Enter '1' for Single List and '2' for Duple List and 99 to quit:  "))
+    pin_type = int(input("What type of pin list do you want to generate? \n '1' - Single List \n '2' - Duple List \n '9' - quit:  \n"))
 
     if pin_type==1:
-        pin_length = int(input("How long should each pin be?   "))
+        pin_length = int(input("How many characters should each pin be?   \n"))
     elif pin_type==2:
-        pin_length = int(input("How long should each pin segment be?   "))
-    elif pin_type==99:
+        pin_length = int(input("How many characters each pin segment be?   \n"))
+    elif pin_type==9:
         quit()
     else:
-        print("Not a valid pin list.")
+        print("Not a valid entry.")
         menu()
 
-    total_pins = int(input("How many pins do you need?  "))
-    job_number = input("Enter the five digit job number:  ")
+    total_pins = int(input("How many pins do you need?  \n"))
+    job_number = input("Enter the five digit job number:  \n")
 
     if pin_type==1:
         pins_single(total_pins,job_number,pin_length)
@@ -100,17 +100,13 @@ def pins_duple(total_pins,job_number,pin_length):
         pin_set = ''.join(random.choice(letters_list) for i in range(pin_length))
         pins_2.append(pin_set)
         
-    #remove duplicates from lists
+    #remove duplicates from lists and then removes any duplicates found in the 2nd pin list compared to the 1st pin list
     pins_1 = list(set(pins_1))
     pins_2 = list(set(pins_2))
     pins_2 = [item for item in pins_2 if item not in pins_1]
-
-
-    ##pins_2a = [item for item in pins_2a if item not in pins_1a]
     
-    if len(pins_1) * len(pins_2) < total_pins:
-        raise RestartProgramException()
-    elif len(pins_1) > len(pins_2):
+    #removes any pins from the longer list so that they are the same length
+    if len(pins_1) > len(pins_2):
         n = len(pins_1) - len(pins_2)
         del pins_1[-n:]
     elif len(pins_1) < len(pins_2):
@@ -119,13 +115,16 @@ def pins_duple(total_pins,job_number,pin_length):
     else: 
         None
 
+    #checks to make sure there will be enough pins after the duplicates have been removed
+    if len(pins_1) * len(pins_2) < total_pins:
+        raise RestartProgramException()
+    else:
+        None
 
+    #creates the data table for the formidable forms upload
     combined_data.append(("MSR_ID", "PIN_1", "PIN_2"))
     for i in range(len(pins_1)):
         combined_data.append((i+1,pins_1[i], pins_2[i]))
-        
-    print(len(pins_1))
-    print(len(pins_2))
 
     print("Combining Lists...")
 
@@ -134,14 +133,16 @@ def pins_duple(total_pins,job_number,pin_length):
         for y in pins_2:
             pins_3.append((random.uniform(0,1),x+y,x,y))
 
+    pins_3.sort(key=lambda x: x[0], reverse=False)
+
+    #creates the export name including the file path from the folder prompt
     out_name_1 = file_path + "/" + job_number + "_pins.csv"
     out_name_2 = file_path + "/" + job_number + "_ff_upload.csv"
     
-    #saves csv files and appends the job number to the file name.
+    #exports the final tables as csv files to the folder previously chosen
     np.savetxt(out_name_1, pins_3, fmt='%6s', delimiter=",") #File will all combinations of pins to be sent to external vendor
     np.savetxt(out_name_2, combined_data, fmt='%6s', delimiter=",") #File with only each individal pin in two columns for upload to formidable forms
     
-
     print("Done!")
     quit()
 
