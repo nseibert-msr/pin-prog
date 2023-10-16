@@ -75,7 +75,7 @@ def pins_single(total_pins,job_number,pin_length):
     print("Creating List 1")
     #initialize arrays to hold lists
     pins_1 = []
-    out_name_1 = file_path + "/" + job_number + "_pins.csv"
+    out_name_1 = (f"{file_path}/{job_number}_pins.csv" )
     for x in range(0, total_pins):
         pin_set = ''.join(random.choice(letters_list) for i in range(pin_length))
         pins_1 = np.append(pins_1, pin_set)
@@ -135,7 +135,7 @@ def pins_duple(total_pins,job_number,pin_length, site):
     print("Combining Lists...")
 
     #iterates over the two lists to create all combinations and append them to the final list
-    url = "https://marketstreetresearch.com/survey-" + job_number + "/?SITE=" + site
+    url = (f"https://marketstreetresearch.com/survey-{job_number}/?SITE={site}")
     for x in pins_1:
         for y in pins_2:
             pins_3.append((random.uniform(0,1),x+y,x,y))
@@ -144,12 +144,12 @@ def pins_duple(total_pins,job_number,pin_length, site):
     counter=1
     numbered_pins = [('MSR_ID','PIN','PIN-1','PIN-2','URL')]
     for item in pins_3:
-        numbered_pins.append((counter,item[1],item[2],item[3],url + "&PIN1=" + item[2] + "&PIN2=" + item[3]))
+        numbered_pins.append((counter,item[1],item[2],item[3],(f"{url}&PIN1={item[2]}&PIN2={item[3]}")))
         counter += 1
 
     #creates the export name including the file path from the folder prompt
-    out_name_1 = file_path + "/" + job_number + "_pins.csv"
-    out_name_2 = file_path + "/" + job_number + "_ff_upload.csv"
+    out_name_1 = (f"{file_path}/{job_number}_pins.csv" )
+    out_name_2 = (f"{file_path}/{job_number}_ff_upload.csv" )
     
     #exports the final tables as csv files to the folder previously chosen
     np.savetxt(out_name_1, numbered_pins, fmt='%6s', delimiter=",") #File will all combinations of pins to be sent to external vendor
